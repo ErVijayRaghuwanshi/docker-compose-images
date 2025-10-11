@@ -1,0 +1,26 @@
+_format_version: "3.0"
+
+services:
+  - name: auth-service
+    url: http://auth-service:5000
+    routes:
+      - name: auth-login
+        paths:
+          - /api/auth
+        strip_path: true
+
+  - name: video-service
+    url: http://video-service:5001
+    routes:
+      - name: video-route
+        paths:
+          - /api/video
+        strip_path: true
+
+  - name: payment-service
+    url: http://payment-service:5002
+    routes:
+      - name: payment-route
+        paths:
+          - /api/payment
+        strip_path: true

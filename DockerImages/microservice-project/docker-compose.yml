@@ -1,0 +1,53 @@
+
+services:
+  consul:
+    image: hashicorp/consul:latest
+    ports:
+      - "8500:8500"
+    command: "consul agent -dev -client=0.0.0.0"
+    networks:
+      - kong-net
+
+  kong:
+    image: kong:latest
+    container_name: kong
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    volumes:
+      - ./api-gateway/kong.yml:/usr/local/kong/declarative/kong.yml
+    depends_on:
+      - auth-service
+      - video-service
+      - payment-service
+    networks:
+      - kong-net
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "5000:5000"
+    networks:
+      - kong-net
+
+  video-service:
+    build: ./video-service
+    ports:
+      - "5001:5001"
+    networks:
+      - kong-net
+
+  payment-service:
+    build: ./payment-service
+    ports:
+      - "5002:5002"
+    networks:
+      - kong-net
+
+networks:
+  kong-net:
+    driver: bridge

@@ -1,0 +1,16 @@
+
+services:
+  burpsuite:
+    container_name: burpsuite
+    image: alexandreoda/burpsuite
+    restart: "no"
+    privileged: false
+    environment:
+      - DISPLAY
+    volumes:
+      - "${HOME}:/home/burpsuite"
+      - "/tmp/.X11-unix/:/tmp/.X11-unix/"
+      - "/etc/localtime:/etc/localtime:ro"
+    ports:
+      # - "8080:8080"
+      - "9090:8080" # Burp Suite on 9090

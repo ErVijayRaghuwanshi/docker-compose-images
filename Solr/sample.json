@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1",
+    "title": "Introduction to Solr",
+    "author": "Lucene Team",
+    "year": 2023,
+    "category": "Search"
+  },
+  {
+    "id": "2",
+    "title": "Mastering Docker",
+    "author": "Jane Doe",
+    "year": 2022,
+    "category": "DevOps"
+  },
+  {
+    "id": "3",
+    "title": "Learning Microservices",
+    "author": "John Smith",
+    "year": 2021,
+    "category": "Architecture"
+  }
+]

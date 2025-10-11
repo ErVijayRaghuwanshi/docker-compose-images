@@ -1,0 +1,20 @@
+
+
+services:
+  solr:
+    image: solr:latest
+    container_name: solr-server
+    ports:
+      - "8983:8983"
+    environment:
+      - SOLR_HEAP=1G
+      - TZ=America/New_York
+    command:
+      - solr-precreate
+      - mycore
+    volumes:
+      - solr_data:/var/solr
+      - ./conf/managed-schema:/var/solr/data/mycore/conf/managed-schema
+
+volumes:
+  solr_data:

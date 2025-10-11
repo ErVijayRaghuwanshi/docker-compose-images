@@ -1,0 +1,97 @@
+
+
+services:
+  # mysql:
+  #   image: mysql:latest
+  #   container_name: mysql_server
+  #   restart: always
+  #   ports:
+  #     - "3306:3306"
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: my-secret-pw
+  #     MYSQL_DATABASE: my_database
+  #     MYSQL_USER: admin
+  #     MYSQL_PASSWORD: admin123
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  mongo:
+    image: mongo:latest
+    container_name: mongo_server
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - mongo_data:/data/db
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres_server
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: my_database
+    volumes:
+      # - postgres_data:/var/lib/postgresql/data
+      - pgsql_data:/var/lib/postgresql/data
+
+  dbgate:
+    image: dbgate/dbgate
+    container_name: dbgate
+    restart: always
+    ports:
+      - "3000:3000" # Access DBGate at http://localhost:8080
+    volumes:
+      # - dbgate-data:/root/.dbgate
+      - dbgate-data_test:/root/.dbgate
+    environment:
+      CONNECTIONS: con2,con3,con4
+
+      LABEL_con1: MySQL
+      SERVER_con1: mysql
+      USER_con1: admin
+      PASSWORD_con1: admin123
+      PORT_con1: 3306
+      ENGINE_con1: mysql@dbgate-plugin-mysql
+      # DATABASE_con1: my_database
+
+      LABEL_con2: PostgreSQL
+      SERVER_con2: postgres
+      USER_con2: postgres
+      PASSWORD_con2: postgres
+      PORT_con2: 5432
+      ENGINE_con2: postgres@dbgate-plugin-postgres
+      # DATABASE_con2: my_database
+      
+      
+      LABEL_con3: MySQL_Test
+      SERVER_con3: 184.168.121.49
+      USER_con3: root
+      PASSWORD_con3: root
+      PORT_con3: 3306
+      ENGINE_con3: mysql@dbgate-plugin-mysql
+
+      LABEL_con4: MongoDB
+      SERVER_con4: mongo
+      USER_con4: root
+      PASSWORD_con4: root
+      PORT_con4: 27017
+      ENGINE_con4: mongo@dbgate-plugin-mongo
+    depends_on:
+      # - mysql
+      - postgres
+
+
+volumes:
+  mongo_data:
+  mysql_data:
+  # postgres_data:
+  pgsql_data:
+  # dbgate-data:
+  dbgate-data_test:
+    driver: local

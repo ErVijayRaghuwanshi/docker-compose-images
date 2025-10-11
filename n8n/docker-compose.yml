@@ -1,0 +1,22 @@
+name: n8n
+
+services:
+  n8n:
+    image: n8nio/n8n
+    restart: unless-stopped
+    container_name: n8n
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    environment:
+      N8N_HOST: 0.0.0.0 # DOCKER_HOST_IP would be set in the host's environment
+      N8N_PORT: 5678
+      N8N_PROTOCOL: "http"
+      N8N_SECURE_COOKIES: "false"
+      GENERIC_TIMEZONE: "Asia/Kolkata"
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: "admin"
+      N8N_BASIC_AUTH_PASSWORD: "admin"
+volumes:
+  n8n_data:

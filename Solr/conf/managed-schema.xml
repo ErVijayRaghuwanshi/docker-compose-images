@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="mycore" version="1.6">
+
+  <!-- Field Types -->
+  <types>
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
+    <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldType>
+    <fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
+  </types>
+
+  <!-- Fields -->
+  <fields>
+    <field name="id" type="string" indexed="true" stored="true" required="true" />
+    <field name="title" type="text_general" indexed="true" stored="true"/>
+    <field name="author" type="text_general" indexed="true" stored="true"/>
+    <field name="year" type="int" indexed="true" stored="true"/>
+    <field name="category" type="string" indexed="true" stored="true"/>
+  </fields>
+
+  <!-- Unique Key -->
+  <uniqueKey>id</uniqueKey>
+
+  <!-- Default Search Field -->
+  <defaultSearchField>title</defaultSearchField>
+
+</schema>

@@ -1,0 +1,35 @@
+// Import the required components
+import "alloy.filelog"
+import "alloy.discovery"
+import "alloy.lokistack"
+
+// Discover log files
+discovery.files "backend_logs" {
+  targets = [
+    {
+      __path__ = "/var/log/backend/*.log",
+    },
+  ]
+}
+
+// Match discovered log files
+local.file_match "log_files" {
+  path_targets = discovery.files.backend_logs.targets
+}
+
+// Configure Loki writer
+lokistack.write "default" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
+
+// Forward logs to Loki
+filelog "backend_logs" {
+  targets    = local.file_match.log_files.outputs
+  forward_to = [lokistack.write.default.receiver]
+  labels = {
+    job  = "backend-app",
+    host = "macbook",
+  }
+}

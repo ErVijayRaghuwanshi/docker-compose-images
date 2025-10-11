@@ -1,0 +1,44 @@
+
+
+services:
+  # consul:
+  #   image: hashicorp/consul:latest
+  #   ports:
+  #     - "8500:8500"
+  #   command: "consul agent -dev -client=0.0.0.0"
+  #   networks:
+  #     - kong-net
+
+  kong:
+    image: kong:latest
+    container_name: kong
+    environment:
+      KONG_DATABASE: "off"
+      KONG_PG_PASSWORD: kong
+      KONG_PASSWORD: kong
+      KONG_DECLARATIVE_CONFIG: /kong/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      # KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+      ADMIN_GUI_API_URL: 0.0.0.0:8001
+    ports:
+      - "8000:8000"   # Kong Proxy
+      - "8001:8001"   # Kong Admin API
+      - "8444:8444"   # Kong Admin API (SSL)
+    volumes:
+      - ./kong/kong.yml:/kong/kong.yml
+    depends_on:
+      - microservice1
+      - microservice2
+      - microservice3
+
+  microservice1:
+    build: ./microservice1
+
+  microservice2:
+    build: ./microservice2
+
+  microservice3:
+    build: ./microservice3

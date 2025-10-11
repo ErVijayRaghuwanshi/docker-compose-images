@@ -1,0 +1,23 @@
+_format_version: "3.0"
+services:
+  - name: microservice1
+    url: http://microservice1:8001/service1
+    # The following line is added to ensure the OpenAPI and docs URLs are correctly set
+    routes:
+      - name: ms1
+        paths:
+          - /service1
+  - name: microservice2
+    url: http://microservice2:8002/service2
+    # The following line is added to ensure the OpenAPI and docs URLs are correctly set
+    routes:
+      - name: ms2
+        paths:
+          - /service2
+  - name: microservice3
+    url: http://microservice3:8003/service3
+    # The following line is added to ensure the OpenAPI and docs URLs are correctly set
+    routes:
+      - name: ms3
+        paths:
+          - /service3
