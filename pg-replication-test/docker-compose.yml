@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # --- PRIMARY SERVER (Read/Write) ---
+  pg-primary:
+    image: postgres:latest
+    container_name: pg-primary
+    hostname: pg-primary
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydb
+      # Replication user credentials
+      REPL_USER: replicator
+      REPL_PASSWORD: repl_postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      # Persistent data for the primary
+      - pg_primary_data:/var/lib/postgresql
+      # Optional: Initialization script for replication user
+      - ./00_init_primary.sql:/docker-entrypoint-initdb.d/00_init_primary.sql
+    networks:
+      - pg-network
+    command: 
+      # Set essential replication parameters
+      - postgres
+      - -c
+      - wal_level=replica
+      - -c
+      - max_wal_senders=10
+      - -c
+      - hot_standby=on
+
+  # --- REPLICA SERVER (Read-Only Hot Standby) ---
+  pg-replica:
+    image: postgres:latest
+    container_name: pg-replica
+    hostname: pg-replica
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydb
+      # Connect to the primary using the replication user
+      PGUSER: replicator
+      PGPASSWORD: repl_postgres
+    ports:
+      - "5435:5432" # Map to a different host port to avoid conflict
+    volumes:
+      # Persistent data for the replica
+      - pg_replica_data:/var/lib/postgresql
+    networks:
+      - pg-network
+    depends_on:
+      - pg-primary
+    # The crucial command: Wait for the primary, then perform a base backup
+    # and start the replica. -R flag auto-configures the standby.signal file.
+    command: 
+      - bash
+      - -c
+      - |
+        until pg_basebackup -D /var/lib/postgresql -R -h pg-primary -U $PGUSER --wal-method=stream; do
+          echo "Waiting for primary to accept replication connections..."
+          sleep 1
+        done
+        echo "Base backup complete. Starting PostgreSQL replica."
+        # Start the postgres server
+        postgres
+
+volumes:
+  pg_primary_data:
+  pg_replica_data:
+
+networks:
+  pg-network:
+    driver: bridge
